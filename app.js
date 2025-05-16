@@ -11,8 +11,15 @@ const path= require('path');
 const connectDB= require('./server/config/db');
 const {isActiveRoute}= require('./server/helpers/routeHelpers');
 
+
+const fs = require('fs');
+const uploadDir = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const app= express();
-const PORT= 5000 || process.env.PORT;
+const PORT= process.env.PORT || 5000;
 
 connectDB();
 
