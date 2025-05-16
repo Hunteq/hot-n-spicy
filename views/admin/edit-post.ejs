@@ -1,0 +1,40 @@
+<a href="/dashboard">&larr; Back</a>
+<div class="admin-title">
+  <h2>Edit Menu Item</h2>
+
+  <form action="/delete-post/<%= data._id %>?_method=DELETE" method="POST">
+    <input type="submit" value="Delete" class="btn-delete btn">
+  </form>
+</div>
+
+<form action="/edit-post/<%= data._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+  <label for="name"><b>Item Name</b></label>
+  <input type="text" placeholder="Item Name" name="name" value="<%= data.name %>" required>
+
+  <label for="description"><b>Description</b></label>
+  <textarea name="description" cols="50" rows="5" ><%= data.description %></textarea>
+
+  <label for="category"><b>Category</b></label>
+  <select name="category" required>
+    <option value="Veg Pizza" <%= data.category === 'Veg Pizza' ? 'selected' : '' %>>Veg Pizza</option>
+    <option value="Non-Veg Pizza" <%= data.category === 'Non-Veg Pizza' ? 'selected' : '' %>>Non-Veg Pizza</option>
+    <option value="Pasta" <%= data.category === 'Pasta' ? 'selected' : '' %>>Pasta</option>
+    <option value="Salad" <%= data.category === 'Salad' ? 'selected' : '' %>>Salad</option>
+    <option value="Starters" <%= data.category === 'Starters' ? 'selected' : '' %>>Starters</option>
+    <option value="Dessert" <%= data.category === 'Dessert' ? 'selected' : '' %>>Dessert</option>
+    <option value="Sandwich" <%= data.category === 'Sandwich' ? 'selected' : '' %>>Sandwich</option>
+    <option value="Milkshakes" <%= data.category === 'Milkshakes' ? 'selected' : '' %>>Milkshakes</option>
+    <option value="Beverages" <%= data.category === 'Beverages' ? 'selected' : '' %>>Beverages</option>
+  </select>
+
+  <label for="price"><b>Price (₹)</b></label>
+  <input type="number" step="0.01" placeholder="Price" name="price" value="<%= data.price %>" required>
+
+  <label for="image"><b>Current Image</b></label>
+  <img src="<%= data.image %>" alt="<%= data.name %>" style="max-width: 200px; display: block; margin-bottom: 10px;">
+  
+  <label for="image"><b>Change Image (optional)</b></label>
+  <input type="file" name="image" accept="image/*">
+
+  <input type="submit" value="Update Item" class="btn">
+</form>

@@ -1,0 +1,43 @@
+<div class="author">
+    <h1 class="author__heading">WELCOME TO HOT N' SWEET ITALIAN PIZZERIA</h1>
+    <p class="author__body">Where Every Bite Feels Like a Hug for Your Tummy!</p>
+  </div>
+  
+  <img src="/uploads/open-bg-pizza.jpg" alt="Pizzeria interior" class="hero-image" width="981" height="528">
+  
+  <section class="menu-categories">
+    <h2>Our Menu</h2>
+    
+    <div class="category-tabs">
+        <a href="/?category=all" class="tab-btn <%= currentCategory === 'all' ? 'active' : '' %>">All</a>
+        <a href="/?category=Veg Pizza" class="tab-btn <%= currentCategory === 'Veg Pizza' ? 'active' : '' %>">Veg Pizza</a>
+        <a href="/?category=Non-Veg Pizza" class="tab-btn <%= currentCategory === 'Non-Veg Pizza' ? 'active' : '' %>">Non-Veg Pizza</a>
+        <a href="/?category=Pasta" class="tab-btn <%= currentCategory === 'Pasta' ? 'active' : '' %>">Pasta</a>
+        <a href="/?category=Salad" class="tab-btn <%= currentCategory === 'Salad' ? 'active' : '' %>">Salad</a>
+        <a href="/?category=Starters" class="tab-btn <%= currentCategory === 'Starters' ? 'active' : '' %>">Starters</a>
+        <a href="/?category=Dessert" class="tab-btn <%= currentCategory === 'Dessert' ? 'active' : '' %>">Dessert</a>
+        <a href="/?category=Sandwich" class="tab-btn <%= currentCategory === 'Sandwich' ? 'active' : '' %>">Sandwich</a>
+        <a href="/?category=Milkshakes" class="tab-btn <%= currentCategory === 'Milkshakes' ? 'active' : '' %>">Milkshakes</a>
+        <a href="/?category=Beverages" class="tab-btn <%= currentCategory === 'Beverages' ? 'active' : '' %>">Beverages</a>
+    </div>
+  
+    <div class="menu-items">
+        <% data.forEach(item => { %>
+            <div class="menu-item">
+                    <img src="<%= item.image %>" alt="<%= item.name %>">
+                    <div class="item-details">
+                        <h3><a href="/post/<%= item._id %>" class="item-link"><%= item.name %></a></h3>
+                        <p class="category"><%= item.category %></p>
+                        <!-- <p class="description"><%= item.description %></p> -->
+                        <p class="price">₹<%= (item.price || 0).toFixed(2) %></p>
+                    </div>
+            </div>
+        <% }) %>
+    </div>
+  
+    <% if (nextPage) { %>
+      <div class="pagination">
+        <a href="/?page=<%= nextPage %><% if (currentCategory && currentCategory !== 'all') { %>&category=<%= currentCategory %><% } %>" class="pagination-next">Next Page →</a>
+      </div>
+    <% } %>
+  </section>

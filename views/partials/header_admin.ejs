@@ -1,0 +1,68 @@
+<header class="header">
+  <a href="/" class="header__logo">
+      <img src="/uploads/logo3.png" alt="Pizza Logo" class="logo-image">
+  </a>
+
+  <nav class="header__nav">
+      <ul>
+          <li>
+              <a href="/" class="">Home</a>
+          </li>
+          <li>
+              <a href="/about" class="">About</a>
+          </li>
+          <li>
+              <a href="/contact" class="">Contact</a>
+          </li>
+      </ul>
+  </nav>
+
+  <div class="header__buttons">
+      <a href="/logout" class="btn">
+          Logout
+      </a>
+  </div>
+
+  <button class="hamburger">
+      <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+      </span>
+  </button>
+
+  <div class="mobile-menu">
+      <ul>
+          <li>
+              <a href="/">Home</a>
+          </li>
+          <li>
+              <a href="/about">About</a>
+          </li>
+          <li>
+              <a href="/contact">Contact</a>
+          </li>
+          <li>
+              <a href="/logout" class="btn" style="display: inline-block; margin-top: 10px; color: white;">Logout</a>
+          </li>
+      </ul>
+  </div>
+  <div class="overlay"></div>
+</header>
+
+<script>
+  // Mobile menu toggle for admin
+  const hamburger = document.querySelector('.hamburger');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  const overlay = document.querySelector('.overlay');
+  
+  hamburger.addEventListener('click', function() {
+      this.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+      overlay.classList.toggle('active');
+  });
+  
+  overlay.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      mobileMenu.classList.remove('active');
+      this.classList.remove('active');
+  });
+</script>

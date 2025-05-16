@@ -1,0 +1,23 @@
+<% if (data && data.length > 0) { %>
+  <div class="author">
+    <h1 class="author__heading">Search Results for "<%= searchTerm %>"</h1>
+  </div>
+  
+  <section class="menu-items">
+    <% data.forEach(item => { %>
+      <div class="menu-item">
+        <img src="<%= item.image %>" alt="<%= item.name %>">
+        <div class="item-details">
+          <h3><a href="/post/<%= item._id %>" class="item-link"><%= item.name %></a></h3>
+          <p class="category"><%= item.category %></p>
+          <p class="description"><%= item.description %></p>
+          <p class="price">₹<%= (item.price || 0).toFixed(2) %></p>
+        </div>
+      </div>
+    <% }) %>
+  </section>
+<% } else if (searchTerm) { %>
+  <div class="no-results">
+    <p>No items found matching "<%= searchTerm %>"</p>
+  </div>
+<% } %>

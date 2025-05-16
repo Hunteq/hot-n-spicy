@@ -1,0 +1,160 @@
+<div class="menu-item-detail">
+  <img src="<%= data.image %>" alt="<%= data.name %>" class="item-image">
+  <div class="item-info">
+    <h1><%= data.name %></h1>
+    <p class="category"><%= data.category %></p>
+    <p class="price">₹<%= data.price.toFixed(2) %></p>
+    <div class="description">
+      <%= data.description %>
+    </div>
+    
+    <!-- Rating Section -->
+    <div class="rating-section">
+      <div class="user-rating">
+        <p>Your Rating:</p>
+        <div class="rate-stars">
+          <% for (let i = 1; i <= 5; i++) { %>
+            <i class="<%= i <= (userRating || 0) ? 'fas' : 'far' %> fa-star rate-star" 
+               data-value="<%= i %>"></i>
+          <% } %>
+        </div>
+      </div>
+      <div class="stars">
+        <% const avgRating = data.averageRating || 0; %>
+        <% const fullStars = Math.floor(avgRating); %>
+        <% const hasHalfStar = avgRating % 1 >= 0.5; %>
+        <% const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); %>
+        
+        <!-- <% for (let i = 0; i < fullStars; i++) { %>
+          <i class="fas fa-star"></i>
+        <% } %>
+        <% if (hasHalfStar) { %>
+          <i class="fas fa-star-half-alt"></i>
+        <% } %>
+        <% for (let i = 0; i < emptyStars; i++) { %>
+          <i class="far fa-star"></i>
+        <% } %> -->
+        <span class="rating-value">(<%= avgRating.toFixed(1) %>)</span>
+        <span class="rating-count"><%= data.ratingCount %> ratings</span>
+      </div>
+    </div>
+    
+    
+    <div class="like-section">
+      <button id="likeButton" class="like-btn" data-post-id="<%= data._id %>">
+        <i class="<%= isLiked ? 'fas' : 'far' %> fa-heart"></i>
+        <span id="likeCount"><%= data.likeCount %></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const likeButton = document.getElementById('likeButton');
+  const likeCount = document.getElementById('likeCount');
+  const rateStars = document.querySelectorAll('.rate-star');
+  
+  // Like functionality
+  likeButton.addEventListener('click', async function() {
+    const postId = this.getAttribute('data-post-id');
+    
+    try {
+      const response = await fetch(`/like/${postId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (data.liked) {
+        likeButton.innerHTML = `<i class="fas fa-heart"></i> <span>${data.likeCount}</span>`;
+      } else {
+        likeButton.innerHTML = `<i class="far fa-heart"></i> <span>${data.likeCount}</span>`;
+      }
+      
+      likeCount.textContent = data.likeCount;
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
+  
+  // Rating functionality
+  let userRating = 0;
+  
+  // Fetch user's existing rating
+  async function fetchUserRating() {
+    try {
+      const postId = '<%= data._id %>';
+      const response = await fetch(`/user-rating/${postId}`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      
+      if (data.userRating > 0) {
+        userRating = data.userRating;
+        updateStarDisplay();
+      }
+    } catch (error) {
+      console.error('Error fetching user rating:', error);
+    }
+  }
+  
+  // Update star display
+  function updateStarDisplay() {
+    rateStars.forEach(star => {
+      const value = parseInt(star.getAttribute('data-value'));
+      star.className = value <= userRating ? 'fas fa-star rate-star' : 'far fa-star rate-star';
+    });
+  }
+  
+  // Star click handler
+  rateStars.forEach(star => {
+    star.addEventListener('click', async function() {
+      const value = parseInt(this.getAttribute('data-value'));
+      userRating = value;
+      updateStarDisplay();
+      
+      try {
+        const postId = '<%= data._id %>';
+        const response = await fetch(`/rate/${postId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ rating: value }),
+          credentials: 'include'
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          // Reload the page to show updated ratings
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error submitting rating:', error);
+      }
+    });
+    
+    // Hover effects
+    star.addEventListener('mouseover', function() {
+      const value = parseInt(this.getAttribute('data-value'));
+      rateStars.forEach(s => {
+        const sValue = parseInt(s.getAttribute('data-value'));
+        s.className = sValue <= value ? 'fas fa-star rate-star' : 'far fa-star rate-star';
+      });
+    });
+    
+    star.addEventListener('mouseout', function() {
+      updateStarDisplay();
+    });
+  });
+  
+  // Initialize
+  fetchUserRating();
+});
+</script>
+
