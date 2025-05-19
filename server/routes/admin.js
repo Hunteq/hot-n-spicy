@@ -274,29 +274,39 @@ router.post('/like/:id', authMiddleWare, async (req, res) => {
 
     // Check if user already liked the post
     const post = await Post.findById(postId);
-    const user = await User.findById(userId);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
 
-    if (post.likes.includes(userId)) {
+    const alreadyLiked = post.likes.includes(userId);
+    let likeCount = post.likeCount;
+
+    if (alreadyLiked) {
       // Unlike the post
       await Post.findByIdAndUpdate(postId, {
         $pull: { likes: userId },
         $inc: { likeCount: -1 }
       });
-      await User.findByIdAndUpdate(userId, {
-        $pull: { likedPosts: postId }
-      });
-      return res.json({ liked: false, likeCount: post.likeCount - 1 });
+      likeCount--;
     } else {
       // Like the post
       await Post.findByIdAndUpdate(postId, {
         $addToSet: { likes: userId },
         $inc: { likeCount: 1 }
       });
-      await User.findByIdAndUpdate(userId, {
-        $addToSet: { likedPosts: postId }
-      });
-      return res.json({ liked: true, likeCount: post.likeCount + 1 });
+      likeCount++;
     }
+
+    // Update user's likedPosts
+    await User.findByIdAndUpdate(userId, {
+      [alreadyLiked ? '$pull' : '$addToSet']: { likedPosts: postId }
+    });
+
+    res.json({ 
+      liked: !alreadyLiked, 
+      likeCount: likeCount 
+    });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Server error' });
@@ -357,33 +367,29 @@ router.post('/rate/:id', authMiddleWare, async (req, res) => {
       // Update existing rating
       post.ratings[existingRatingIndex].value = rating;
     } else {
-      // Add new rating - ensure both user and value are provided
+      // Add new rating
       post.ratings.push({ 
         user: userId, 
         value: rating 
       });
     }
 
-    // Filter out any invalid ratings before saving
-    post.ratings = post.ratings.filter(rating => 
-      rating && 
-      rating.user && 
-      rating.value !== undefined && 
-      rating.value >= 1 && 
-      rating.value <= 5
-    );
-
     // Calculate new average
     const sum = post.ratings.reduce((total, r) => total + r.value, 0);
-    post.averageRating = post.ratings.length > 0 ? sum / post.ratings.length : 0;
-    post.ratingCount = post.ratings.length;
+    const averageRating = post.ratings.length > 0 ? sum / post.ratings.length : 0;
+    const ratingCount = post.ratings.length;
 
-    await post.save();
-    
+    // Update the post
+    await Post.findByIdAndUpdate(postId, {
+      ratings: post.ratings,
+      averageRating,
+      ratingCount
+    });
+
     res.json({ 
       success: true,
-      averageRating: post.averageRating,
-      ratingCount: post.ratingCount,
+      averageRating,
+      ratingCount,
       userRating: rating
     });
   } catch (error) {

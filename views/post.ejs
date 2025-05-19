@@ -10,7 +10,7 @@
     
     <!-- Rating Section -->
     <div class="rating-section">
-      <div class="user-rating">
+       <div class="user-rating">
         <p>Your Rating:</p>
         <div class="rate-stars">
           <% for (let i = 1; i <= 5; i++) { %>
@@ -25,7 +25,7 @@
         <% const hasHalfStar = avgRating % 1 >= 0.5; %>
         <% const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); %>
         
-        <!-- <% for (let i = 0; i < fullStars; i++) { %>
+       <% for (let i = 0; i < fullStars; i++) { %>
           <i class="fas fa-star"></i>
         <% } %>
         <% if (hasHalfStar) { %>
@@ -33,7 +33,7 @@
         <% } %>
         <% for (let i = 0; i < emptyStars; i++) { %>
           <i class="far fa-star"></i>
-        <% } %> -->
+        <% } %> 
         <span class="rating-value">(<%= avgRating.toFixed(1) %>)</span>
         <span class="rating-count"><%= data.ratingCount %> ratings</span>
       </div>
@@ -43,7 +43,7 @@
     <div class="like-section">
       <button id="likeButton" class="like-btn" data-post-id="<%= data._id %>">
         <i class="<%= isLiked ? 'fas' : 'far' %> fa-heart"></i>
-        <span id="likeCount"><%= data.likeCount %></span>
+        <span id="likeCount"><%= data.likeCount || 0 %></span>
       </button>
     </div>
   </div>
@@ -70,41 +70,25 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const data = await response.json();
       
-      if (data.liked) {
-        likeButton.innerHTML = `<i class="fas fa-heart"></i> <span>${data.likeCount}</span>`;
-      } else {
-        likeButton.innerHTML = `<i class="far fa-heart"></i> <span>${data.likeCount}</span>`;
+      if (data.error) {
+        if (data.error === 'Unauthorized') {
+          window.location.href = '/admin'; // Redirect to login if unauthorized
+        }
+        return;
       }
       
+      likeButton.innerHTML = `<i class="${data.liked ? 'fas' : 'far'} fa-heart"></i> <span>${data.likeCount}</span>`;
       likeCount.textContent = data.likeCount;
     } catch (error) {
       console.error('Error:', error);
+      alert('You need to be logged in to like items');
     }
   });
   
   // Rating functionality
-  let userRating = 0;
-  
-  // Fetch user's existing rating
-  async function fetchUserRating() {
-    try {
-      const postId = '<%= data._id %>';
-      const response = await fetch(`/user-rating/${postId}`, {
-        credentials: 'include'
-      });
-      const data = await response.json();
-      
-      if (data.userRating > 0) {
-        userRating = data.userRating;
-        updateStarDisplay();
-      }
-    } catch (error) {
-      console.error('Error fetching user rating:', error);
-    }
-  }
-  
-  // Update star display
-  function updateStarDisplay() {
+  let userRating = '<%= userRating || 0 %>';  
+    // Update star display
+    function updateStarDisplay() {
     rateStars.forEach(star => {
       const value = parseInt(star.getAttribute('data-value'));
       star.className = value <= userRating ? 'fas fa-star rate-star' : 'far fa-star rate-star';
@@ -114,12 +98,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Star click handler
   rateStars.forEach(star => {
     star.addEventListener('click', async function() {
-      const value = parseInt(this.getAttribute('data-value'));
-      userRating = value;
-      updateStarDisplay();
-      
       try {
+        const value = parseInt(this.getAttribute('data-value'));
         const postId = '<%= data._id %>';
+        
         const response = await fetch(`/rate/${postId}`, {
           method: 'POST',
           headers: {
@@ -129,13 +111,32 @@ document.addEventListener('DOMContentLoaded', function() {
           credentials: 'include'
         });
         
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
         const data = await response.json();
-        if (data.success) {
-          // Reload the page to show updated ratings
-          window.location.reload();
+        
+        if (data.error) {
+          if (data.error === 'Unauthorized') {
+            window.location.href = '/admin'; // Redirect to login if unauthorized
+          }
+          alert(data.error);
+          return;
+        }
+        
+        // Update the display without reloading
+        userRating = value;
+        updateStarDisplay();
+        
+        // Update the average rating display
+        if (data.averageRating !== undefined) {
+          document.querySelector('.rating-value').textContent = `(${data.averageRating.toFixed(1)})`;
+          document.querySelector('.rating-count').textContent = `${data.ratingCount} ratings`;
         }
       } catch (error) {
         console.error('Error submitting rating:', error);
+        alert('You need to be logged in to rate items');
       }
     });
     
@@ -148,13 +149,11 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
     
-    star.addEventListener('mouseout', function() {
-      updateStarDisplay();
-    });
+    star.addEventListener('mouseout', updateStarDisplay);
   });
   
-  // Initialize
-  fetchUserRating();
+  // Initialize star display
+  updateStarDisplay();
 });
 </script>
 
