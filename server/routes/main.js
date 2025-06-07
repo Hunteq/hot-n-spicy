@@ -63,29 +63,29 @@ router.get('/post/:id', async(req, res)=> {
           description: "The Best Place To Satisfy Your Tummy"
       }
 
-      let isLiked = false;
-      let userRating = 0;
+      // let isLiked = false;
+      // let userRating = 0;
       
-      if (req.cookies.token) {
-          try {
-              const decoded = jwt.verify(req.cookies.token, jwtSecret);
-              isLiked = data.likes.includes(decoded.userId);
+      // if (req.cookies.token) {
+      //     try {
+      //         const decoded = jwt.verify(req.cookies.token, jwtSecret);
+      //         isLiked = data.likes.includes(decoded.userId);
               
-              // Get user's rating
-              const userRatingObj = data.ratings.find(r => r.user.toString() === decoded.userId.toString());
-              if (userRatingObj) {
-                  userRating = userRatingObj.value;
-              }
-          } catch (error) {
-              // Token is invalid, treat as not logged in
-          }
-      }
+      //         // Get user's rating
+      //         const userRatingObj = data.ratings.find(r => r.user.toString() === decoded.userId.toString());
+      //         if (userRatingObj) {
+      //             userRating = userRatingObj.value;
+      //         }
+      //     } catch (error) {
+      //         // Token is invalid, treat as not logged in
+      //     }
+      // }
 
       res.render('post', {
           locals,
           data,
-          isLiked,
-          userRating,
+          // isLiked,
+          // userRating,
           currentRoute: `/post/${slug}`
       });
   }catch(error){
