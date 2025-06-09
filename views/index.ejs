@@ -2,8 +2,19 @@
     <h1 class="author__heading">WELCOME TO HOT N' SWEET ITALIAN PIZZERIA</h1>
     <p class="author__body">Where Every Bite Feels Like a Hug for Your Tummy!</p>
   </div>
-  
-  <img src="/uploads/open-bg-pizza.jpg" alt="Pizzeria interior" class="hero-image" width="981" height="528">
+  <div class="slideshow-container">
+    <div class="slideshow">
+        <div class="slide active">
+            <img src="/uploads/openbg1.jpg" alt="Pizzeria interior" class="hero-image" width="981" height="528">
+        </div>
+        <div class="slide">
+            <img src="/uploads/openbg2.png" alt="Delicious pizza" class="hero-image">
+        </div>
+        <div class="slide">
+            <img src="/uploads/openbg3.webp" alt="Pizza preparation" class="hero-image">
+        </div>
+    </div>
+  </div>
   
   <section class="menu-categories">
     <h2>Our Menu</h2>
@@ -41,3 +52,29 @@
       </div>
     <% } %>
   </section>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+      const slides = document.querySelectorAll('.slide');
+      let currentSlide = 0;
+      
+      function showSlide(index) {
+          // Hide all slides
+          slides.forEach(slide => {
+              slide.classList.remove('active');
+          });
+          
+          // Show current slide
+          slides[index].classList.add('active');
+      }
+      
+      function nextSlide() {
+          currentSlide = (currentSlide + 1) % slides.length;
+          showSlide(currentSlide);
+      }
+      
+      // Start the slideshow
+      showSlide(currentSlide);
+      setInterval(nextSlide, 2000); // Change slide every 2 seconds
+  });
+</script>
