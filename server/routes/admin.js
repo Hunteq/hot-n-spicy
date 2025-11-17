@@ -1,6 +1,7 @@
 const express= require('express');
 const router= express.Router();
 const Post= require('../models/Post');
+const Category = require('../models/Category');
 const User= require('../models/User');
 const bcrypt= require('bcrypt');
 const jwt= require('jsonwebtoken');
@@ -104,7 +105,7 @@ router.get('/dashboard', authMiddleWare, async (req, res) => {
         description: "Hot n' Sweet Italian Pizzeria Menu Management"
       }
   
-      const data = await Post.find();
+      const data = await Post.find().populate('category');
       res.render('admin/dashboard', {
         locals,
         data,
@@ -127,8 +128,10 @@ router.get('/add-post', authMiddleWare, async (req, res) => {
         title: 'Add Post',
         description: 'Add new item  to the menu'
       } 
+      const categories = await Category.find().sort({ name: 1 });
       res.render('admin/add-post', {
         locals,
+        categories,
         layout: adminLayout
       });  
     } catch (error) {
@@ -169,6 +172,10 @@ router.post('/add-post', authMiddleWare, upload.single('image'), async (req, res
 router.put('/edit-post/:id', authMiddleWare, upload.single('image'), async (req, res) => {
     try {
       const { name, description, category, price } = req.body;
+      const categoryExists = await Category.findById(category);
+      if (!categoryExists) {
+        return res.status(400).send('Invalid category');
+      }
       let updateData = {
         name,
         description,
@@ -199,10 +206,15 @@ router.get('/edit-post/:id', authMiddleWare, async (req, res) => {
         title: "Edit Menu Post",
         description: "Edit existing menu item",
       }; 
-      const data = await Post.findOne({ _id: req.params.id });  
+      const data = await Post.findOne({ _id: req.params.id }).populate('category');
+      const categories = await Category.find().sort({ name: 1 });
+      if (!data.category) {
+        data.category = { _id: null };
+      }
       res.render('admin/edit-post', {
         locals,
         data,
+        categories,
         layout: adminLayout
       })
   
@@ -260,5 +272,128 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
   });
 
-  
+/**
+ * GET /
+ * Admin - Categories Management
+ */
+router.get('/categories', authMiddleWare, async (req, res) => {
+  try {
+    const locals = {
+      title: "Manage Categories",
+      description: "Manage menu categories"
+    }
+
+    const data = await Category.find().sort({ createdAt: -1 });
+    res.render('admin/categories', {
+      locals,
+      data,
+      layout: adminLayout
+    });
+
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * GET /
+ * Admin - Add New Category
+ */
+router.get('/add-category', authMiddleWare, async (req, res) => {
+  try {
+    const locals = {
+      title: 'Add Category',
+      description: 'Add new menu category'
+    }
+    res.render('admin/add-category', {
+      locals,
+      layout: adminLayout
+    });  
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * POST /
+ * Admin - Create New Category
+ */
+router.post('/add-category', authMiddleWare, async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    
+    const newCategory = new Category({
+      name,
+      description
+    });
+
+    await Category.create(newCategory);
+    res.redirect('/categories');
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * GET /
+ * Admin - Edit Category
+ */
+router.get('/edit-category/:id', authMiddleWare, async (req, res) => {
+  try {
+    const locals = {
+      title: "Edit Category",
+      description: "Edit menu category",
+    }; 
+    const data = await Category.findOne({ _id: req.params.id });  
+    res.render('admin/edit-category', {
+      locals,
+      data,
+      layout: adminLayout
+    })
+
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * PUT /
+ * Admin - Update Category
+ */
+router.put('/edit-category/:id', authMiddleWare, async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    
+    await Category.findByIdAndUpdate(req.params.id, {
+      name,
+      description,
+      updatedAt: Date.now()
+    });
+    
+    res.redirect('/categories');
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * DELETE /
+ * Admin - Delete Category
+ */
+router.delete('/delete-category/:id', authMiddleWare, async (req, res) => {
+  try {
+    // Check if any posts are using this category
+    const postsWithCategory = await Post.countDocuments({ category: req.params.id });
+    
+    if (postsWithCategory > 0) {
+      return res.status(400).json({ message: 'Cannot delete category with associated posts' });
+    }
+    
+    await Category.deleteOne({ _id: req.params.id });
+    res.redirect('/categories');
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = router;

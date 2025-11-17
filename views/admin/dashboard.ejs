@@ -1,6 +1,20 @@
 <div class="admin-title">
   <h2>Menu Items</h2>
-  <a href="/add-post" class="button">+ Add New Item</a>
+  <div class="admin-actions">
+    <a href="/add-post" class="button">+ Add New Item</a>
+    <a href="/categories" class="button">+ Manage Categories</a>
+  </div>
+</div>
+
+<div id="deleteModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>Delete item?</h3>
+    <p>Are you sure you want to delete "<span id="itemName"></span>"? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+      <button id="confirmDelete" class="btn btn-danger">Delete</button>
+    </div>
+  </div>
 </div>
 
 <ul class="admin-posts">
@@ -10,15 +24,122 @@
         <img src="<%= post.image %>" alt="<%= post.name %>" style="width: 100px; height: 100px; object-fit: cover;">
         <div class="post-details">
           <h3><%= post.name %></h3>
-          <p><%= post.category %> - ₹<%= post.price ? post.price.toFixed(2) : '0.00' %></p>
+          <% if (post.category) { %>
+            <p><%= post.category.name %> - ₹<%= post.price ? post.price.toFixed(2) : '0.00' %></p>
+          <% } else { %>
+            <p>Uncategorized - ₹<%= post.price ? post.price.toFixed(2) : '0.00' %></p>
+          <% } %>
         </div>
       </div>
       <div class="admin-post-controls">
         <a href="/edit-post/<%= post._id %>" class="btn">Edit</a>
-        <form action="/delete-post/<%= post._id %>?_method=DELETE" method="POST">
-          <input type="submit" value="Delete" class="btn-delete btn">
-        </form>
+        <button type="button" class="btn-delete btn" data-item-id="<%= post._id %>" data-item-name="<%= post.name %>">
+          Delete
+        </button>
       </div>
     </li>
   <% }) %>
 </ul>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('deleteModal');
+  const itemNameSpan = document.getElementById('itemName');
+  const cancelBtn = document.getElementById('cancelDelete');
+  const confirmBtn = document.getElementById('confirmDelete');
+  
+  let currentForm = null;
+  
+  // Add click event to all delete buttons
+  document.querySelectorAll('.btn-delete').forEach(button => {
+    button.addEventListener('click', function() {
+      const itemName = this.getAttribute('data-item-name');
+      const itemId = this.getAttribute('data-item-id');
+      
+      // Store reference to the closest li element for form submission
+      currentForm = {
+        itemId: itemId,
+        itemName: itemName
+      };
+      
+      // Show modal with item name
+      itemNameSpan.textContent = itemName;
+      modal.style.display = 'flex';
+    });
+  });
+  
+  // Cancel button
+  cancelBtn.addEventListener('click', function() {
+    modal.style.display = 'none';
+    currentForm = null;
+  });
+  
+  // Confirm delete button
+  confirmBtn.addEventListener('click', function() {
+    if (currentForm) {
+      // Create and submit form programmatically
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `/delete-post/${currentForm.itemId}?_method=DELETE`;
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  });
+  
+  // Close modal when clicking outside
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      currentForm = null;
+    }
+  });
+});
+</script>
+
+<style>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.btn-secondary {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  color: #24292f;
+}
+
+.btn-danger {
+  background: #da3633;
+  border: 1px solid #da3633;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b31d28;
+}
+</style>

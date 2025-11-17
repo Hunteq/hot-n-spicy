@@ -1,6 +1,7 @@
 const express= require('express');
 const router= express.Router();
 const Post= require('../models/Post');
+const Category = require('../models/Category');
 
 /**
  * GET /
@@ -15,17 +16,18 @@ router.get('', async (req, res) => {
       }
 
       // Check if category filter is applied
-      const category = req.query.category;
+      const categoryFilter = req.query.category;
       
       let query = {};
-      if (category && category !== 'all') {
-          query.category = category;
+       if (categoryFilter && categoryFilter !== 'all') {
+        query.category = categoryFilter;
       }
 
       let perPage = 6;
       let page = req.query.page || 1;
 
       const data = await Post.find(query)
+          .populate('category')
           .sort({ createdAt: -1 })
           .skip(perPage * page - perPage)
           .limit(perPage)
@@ -35,13 +37,16 @@ router.get('', async (req, res) => {
       const nextPage = parseInt(page) + 1;
       const hasNextPage = nextPage <= Math.ceil(count / perPage);
 
+      const categories = await Category.find().sort({ name: 1 });
+
       res.render('index', {
           locals,
           data,
+          categories,
           current: page,
           nextPage: hasNextPage ? nextPage : null,
           currentRoute: '/',
-          currentCategory: category || 'all'
+          currentCategory: categoryFilter || 'all'
       });
   } catch (error) {
       console.log(error);
@@ -56,7 +61,7 @@ router.get('', async (req, res) => {
 router.get('/post/:id', async(req, res)=> {
   try{
       let slug = req.params.id;
-      const data = await Post.findById({ _id: slug });
+      const data = await Post.findById({ _id: slug }).populate('category');
 
       const locals={
           title: data.name,
@@ -112,9 +117,9 @@ router.post('/search', async (req, res) => {
         $or: [
           { name: { $regex: new RegExp(searchNoSpecialChar, 'i') }},
           { description: { $regex: new RegExp(searchNoSpecialChar, 'i') }},
-          { category: { $regex: new RegExp(searchNoSpecialChar, 'i') }}
+          { 'category.name': { $regex: new RegExp(searchNoSpecialChar, 'i') }}
         ]
-      });
+      }).populate('category');
   
       res.render("search", {
         data,

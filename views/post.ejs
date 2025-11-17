@@ -2,7 +2,11 @@
     <img src="<%= data.image %>" alt="<%= data.name %>" class="item-image">
     <div class="item-info">
       <h1><%= data.name %></h1>
-      <p class="category"><%= data.category %></p>
+      <% if (data.category) { %>
+        <p class="category"><%= data.category.name %></p>
+      <% } else { %>
+        <p class="category">Uncategorized</p>
+      <% } %>
       <p class="price">₹<%= data.price.toFixed(2) %></p>
       <div class="description">
         <%= data.description %>

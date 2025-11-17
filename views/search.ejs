@@ -9,7 +9,9 @@
         <img src="<%= item.image %>" alt="<%= item.name %>">
         <div class="item-details">
           <h3><a href="/post/<%= item._id %>" class="item-link"><%= item.name %></a></h3>
-          <p class="category"><%= item.category %></p>
+          <% if (item.category) { %>
+            <p class="category"><%= item.category.name %></p>
+          <% } %>
           <p class="description"><%= item.description %></p>
           <p class="price">₹<%= (item.price || 0).toFixed(2) %></p>
         </div>

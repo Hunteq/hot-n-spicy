@@ -15,17 +15,18 @@
   <textarea name="description" cols="50" rows="5" ><%= data.description %></textarea>
 
   <label for="category"><b>Category</b></label>
-  <select name="category" required>
-    <option value="Veg Pizza" <%= data.category === 'Veg Pizza' ? 'selected' : '' %>>Veg Pizza</option>
-    <option value="Non-Veg Pizza" <%= data.category === 'Non-Veg Pizza' ? 'selected' : '' %>>Non-Veg Pizza</option>
-    <option value="Pasta" <%= data.category === 'Pasta' ? 'selected' : '' %>>Pasta</option>
-    <option value="Salad" <%= data.category === 'Salad' ? 'selected' : '' %>>Salad</option>
-    <option value="Starters" <%= data.category === 'Starters' ? 'selected' : '' %>>Starters</option>
-    <option value="Dessert" <%= data.category === 'Dessert' ? 'selected' : '' %>>Dessert</option>
-    <option value="Sandwich" <%= data.category === 'Sandwich' ? 'selected' : '' %>>Sandwich</option>
-    <option value="Milkshakes" <%= data.category === 'Milkshakes' ? 'selected' : '' %>>Milkshakes</option>
-    <option value="Beverages" <%= data.category === 'Beverages' ? 'selected' : '' %>>Beverages</option>
-  </select>
+   <select name="category" required>
+    <option value="">Select Category</option>
+    <% categories.forEach(category => { %> 
+      <option value="<%= category._id %>"  
+        <% if (data.category && data.category._id) { %>
+          <%= data.category._id.toString() === category._id.toString() ? 'selected' : '' %>
+        <% } %>>
+        <%= category.name %>
+      </option>
+    <% }) %>
+   </select>
+  
 
   <label for="price"><b>Price (₹)</b></label>
   <input type="number" step="0.01" placeholder="Price" name="price" value="<%= data.price %>" required>

@@ -18,7 +18,7 @@
   </nav>
 
   <div class="header__buttons">
-      <a href="/logout" class="btn">
+      <a href="#" class="btn" id="logoutBtn">
           Logout
       </a>
   </div>
@@ -41,12 +41,29 @@
               <a href="/contact">Contact</a>
           </li>
           <li>
-              <a href="/logout" class="btn" style="display: inline-block; margin-top: 10px; color: white;">Logout</a>
+              <a href="#" class="btn mobile-logout-btn" style="display: inline-block; margin-top: 10px; color: white;">Logout</a>
           </li>
       </ul>
   </div>
   <div class="overlay"></div>
 </header>
+
+<div id="githubAlert" class="github-alert" style="display: none;">
+  <div class="github-alert-overlay"></div>
+  <div class="github-alert-box">
+    <div class="github-alert-header">
+      <h3>Confirm logout</h3>
+      <button class="github-alert-close">&times;</button>
+    </div>
+    <div class="github-alert-body">
+      <p>Are you sure you want to log out?</p>
+    </div>
+    <div class="github-alert-footer">
+      <button class="github-alert-btn github-alert-btn-secondary" id="cancelLogout">Cancel</button>
+      <button class="github-alert-btn github-alert-btn-primary" id="confirmLogout">Log out</button>
+    </div>
+  </div>
+</div>
 
 <script>
   // Mobile menu toggle for admin
@@ -65,4 +82,188 @@
       mobileMenu.classList.remove('active');
       this.classList.remove('active');
   });
+
+  // GitHub-style logout confirmation
+  const logoutBtn = document.getElementById('logoutBtn');
+  const mobileLogoutBtn = document.querySelector('.mobile-logout-btn');
+  const githubAlert = document.getElementById('githubAlert');
+  const cancelLogout = document.getElementById('cancelLogout');
+  const confirmLogout = document.getElementById('confirmLogout');
+  const alertClose = document.querySelector('.github-alert-close');
+  const alertOverlay = document.querySelector('.github-alert-overlay');
+
+  function showLogoutAlert() {
+    githubAlert.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+  }
+
+  function hideLogoutAlert() {
+    githubAlert.style.display = 'none';
+    document.body.style.overflow = ''; // Restore scrolling
+  }
+
+  function performLogout() {
+    // Close mobile menu if open
+    hamburger.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    overlay.classList.remove('active');
+    
+    // Redirect to logout page
+    window.location.href = '/logout';
+  }
+
+  // Event listeners for logout buttons
+  logoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showLogoutAlert();
+  });
+
+  mobileLogoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showLogoutAlert();
+  });
+
+  // Event listeners for alert actions
+  cancelLogout.addEventListener('click', hideLogoutAlert);
+  alertClose.addEventListener('click', hideLogoutAlert);
+  alertOverlay.addEventListener('click', hideLogoutAlert);
+  confirmLogout.addEventListener('click', performLogout);
+
+  // Close alert with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && githubAlert.style.display === 'block') {
+      hideLogoutAlert();
+    }
+  });
 </script>
+
+<style>
+  .github-alert {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+  }
+
+  .github-alert-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .github-alert-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: alertAppear 0.2s ease-out;
+  }
+
+  @keyframes alertAppear {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .github-alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e1e4e8;
+  }
+
+  .github-alert-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #24292e;
+  }
+
+  .github-alert-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6a737d;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+  }
+
+  .github-alert-close:hover {
+    background-color: #f6f8fa;
+    color: #24292e;
+  }
+
+  .github-alert-body {
+    padding: 16px;
+    border-bottom: 1px solid #e1e4e8;
+  }
+
+  .github-alert-body p {
+    margin: 0;
+    color: #24292e;
+    line-height: 1.5;
+  }
+
+  .github-alert-footer {
+    padding: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .github-alert-btn {
+    padding: 8px 16px;
+    border: 1px solid;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .github-alert-btn-primary {
+    background-color: #da3633;
+    border-color: #da3633;
+    color: white;
+  }
+
+  .github-alert-btn-primary:hover {
+    background-color: #b92524;
+    border-color: #b92524;
+  }
+
+  .github-alert-btn-secondary {
+    background-color: #f6f8fa;
+    border-color: #d0d7de;
+    color: #24292e;
+  }
+
+  .github-alert-btn-secondary:hover {
+    background-color: #eaeef2;
+    border-color: #afb8c1;
+  }
+</style>

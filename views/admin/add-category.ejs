@@ -1,0 +1,14 @@
+<a href="/categories">&larr; Back</a>
+<div class="admin-title">
+  <h2>Add New Category</h2>
+</div>
+
+<form action="/add-category" method="POST">
+  <label for="name"><b>Category Name</b></label>
+  <input type="text" placeholder="Category Name" name="name" required>
+
+  <label for="description"><b>Description</b></label>
+  <textarea name="description" cols="50" rows="5"></textarea>
+
+  <input type="submit" value="Add Category" class="btn">
+</form>

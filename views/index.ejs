@@ -19,7 +19,7 @@
   <section class="menu-categories">
     <h2>Our Menu</h2>
     
-    <div class="category-tabs">
+    <!-- <div class="category-tabs">
         <a href="/?category=all" class="tab-btn <%= currentCategory === 'all' ? 'active' : '' %>">All</a>
         <a href="/?category=Veg Pizza" class="tab-btn <%= currentCategory === 'Veg Pizza' ? 'active' : '' %>">Veg Pizza</a>
         <a href="/?category=Non-Veg Pizza" class="tab-btn <%= currentCategory === 'Non-Veg Pizza' ? 'active' : '' %>">Non-Veg Pizza</a>
@@ -30,7 +30,16 @@
         <a href="/?category=Sandwich" class="tab-btn <%= currentCategory === 'Sandwich' ? 'active' : '' %>">Sandwich</a>
         <a href="/?category=Milkshakes" class="tab-btn <%= currentCategory === 'Milkshakes' ? 'active' : '' %>">Milkshakes</a>
         <a href="/?category=Beverages" class="tab-btn <%= currentCategory === 'Beverages' ? 'active' : '' %>">Beverages</a>
-    </div>
+    </div> -->
+    <div class="category-tabs">
+    <a href="/?category=all" class="tab-btn <%= currentCategory === 'all' ? 'active' : '' %>">All</a>
+    <% categories.forEach(category => { %>
+      <a href="/?category=<%= category._id %>" 
+         class="tab-btn <%= currentCategory === category._id.toString() ? 'active' : '' %>">
+        <%= category.name %>
+      </a>
+    <% }) %>
+  </div>
   
     <div class="menu-items">
         <% data.forEach(item => { %>
@@ -38,7 +47,7 @@
                     <img src="<%= item.image %>" alt="<%= item.name %>">
                     <div class="item-details">
                         <h3><a href="/post/<%= item._id %>" class="item-link"><%= item.name %></a></h3>
-                        <p class="category"><%= item.category %></p>
+                        <p class="category"><%= item.category ? item.category.name : 'Uncategorized' %></p>
                         <!-- <p class="description"><%= item.description %></p> -->
                         <p class="price">₹<%= (item.price || 0).toFixed(2) %></p>
                     </div>

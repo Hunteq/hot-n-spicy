@@ -13,6 +13,12 @@
   <label for="category"><b>Category</b></label>
   <select name="category" required>
     <option value="">Select Category</option>
+    <% categories.forEach(category => { %>
+      <option value="<%= category._id %>"><%= category.name %></option>
+    <% }) %>
+  </select>
+  <!-- <select name="category" required>
+    <option value="">Select Category</option>
     <option value="Veg Pizza">Veg Pizza</option>
     <option value="Non-Veg Pizza">Non-Veg Pizza</option>
     <option value="Pasta">Pasta</option>
@@ -22,7 +28,7 @@
     <option value="Sandwich">Sandwich</option>
     <option value="Milkshakes">Milkshakes</option>
     <option value="Beverages">Beverages</option>
-  </select>
+  </select> -->
 
   <label for="price"><b>Price (₹)</b></label>
   <input type="number" step="0.01" placeholder="Price" name="price" required>

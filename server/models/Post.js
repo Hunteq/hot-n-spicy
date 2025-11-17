@@ -9,10 +9,15 @@ const PostSchema = new Schema({
   description: {
     type: String,
   },
+  // category: {
+  //   type: String,
+  //   required: true,
+  //   enum: ['Veg Pizza', 'Non-Veg Pizza', 'Pasta', 'Salad', 'Starters', 'Dessert', 'Sandwich', 'Milkshakes', 'Beverages']
+  // },
   category: {
-    type: String,
-    required: true,
-    enum: ['Veg Pizza', 'Non-Veg Pizza', 'Pasta', 'Salad', 'Starters', 'Dessert', 'Sandwich', 'Milkshakes', 'Beverages']
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true
   },
   price: {
     type: Number,
