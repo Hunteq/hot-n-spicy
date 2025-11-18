@@ -35,7 +35,8 @@
   <img src="<%= data.image %>" alt="<%= data.name %>" style="max-width: 200px; display: block; margin-bottom: 10px;">
   
   <label for="image"><b>Change Image (optional)</b></label>
-  <input type="file" name="image" accept="image/*">
+  <!-- <input type="file" name="image" accept="image/*"> -->
+  <input type="file" id="image" name="image" accept="image/*" class="form-control">
 
   <input type="submit" value="Update Item" class="btn">
 </form>
