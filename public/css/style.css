@@ -1081,3 +1081,124 @@ iframe {
 }
 
 
+/* PWA Specific Styles */
+
+/* Install Prompt */
+.install-prompt {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    max-width: 400px;
+    width: 90%;
+    border: 1px solid #e1e5e9;
+}
+
+.install-prompt-content {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+}
+
+.install-prompt-icon img {
+    border-radius: 8px;
+}
+
+.install-prompt-text {
+    flex: 1;
+}
+
+.install-prompt-text h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.install-prompt-text p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.install-prompt-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Online/Offline Status */
+.online-status {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.online-status.online {
+    background-color: #10b981;
+}
+
+.online-status.offline {
+    background-color: #ef4444;
+}
+
+/* PWA Optimizations */
+@media (display-mode: standalone) {
+    body {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    .header {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* Safe area insets for notch devices */
+@supports(padding: max(0px)) {
+    .header {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+    }
+}
+
+/* Enhanced touch interactions */
+.btn, button, a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Offline fallback styles */
+.offline-message {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.offline-message i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #9ca3af;
+}

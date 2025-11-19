@@ -40,6 +40,16 @@ app.set('view engine', 'ejs');
 
 app.locals.isActiveRoute = isActiveRoute;
 
+// PWA Service Worker Route
+app.get('/sw.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'sw.js'));
+});
+
+// PWA Manifest Route
+app.get('/manifest.json', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'manifest.json'));
+});
+
 app.use('/', require('./server/routes/main'));
 app.use('/', require('./server/routes/admin'));
 

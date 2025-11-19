@@ -155,4 +155,12 @@ router.get('/contact', (req, res) => {
     });
 });
 
+/**
+ * GET /
+ * Offline Page
+*/
+router.get('/offline', (req, res) => {
+    res.render('offline');
+});
+
 module.exports = router;

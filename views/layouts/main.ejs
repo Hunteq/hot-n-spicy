@@ -4,12 +4,35 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> <%= locals.title %> </title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Hot n Spicy">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Hot n Spicy">
     <meta name="description" content="<%= locals.description %>">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    <meta name="msapplication-TileColor" content="#dc2626">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#dc2626">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/uploads/logo3.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/uploads/logo3.png">
+    <link rel="shortcut icon" href="/uploads/logo3.png">
+
+    <title><%= locals.title %></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <script type="text/javascript" defer src="/js/script.js"></script>
+    <script type="text/javascript" defer src="/js/pwa.js"></script>
 </head>
 <body>
 
@@ -20,6 +43,23 @@
             <%- body %>
         </main>
         <%- include('../partials/footer.ejs') %>
+    </div>
+
+    <!-- Install Prompt -->
+    <div id="installPrompt" class="install-prompt" style="display: none;">
+        <div class="install-prompt-content">
+            <div class="install-prompt-icon">
+                <img src="/uploads/logo3.png" alt="Hot n Spicy Logo" width="40" height="40">
+            </div>
+            <div class="install-prompt-text">
+                <h4>Install Hot n Spicy</h4>
+                <p>Get the best pizza experience with our app!</p>
+            </div>
+            <div class="install-prompt-buttons">
+                <button id="installCancel" class="btn btn-secondary">Not Now</button>
+                <button id="installConfirm" class="btn btn-primary">Install</button>
+            </div>
+        </div>
     </div>
 
 </body>
